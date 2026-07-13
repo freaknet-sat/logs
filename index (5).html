@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fr3@k Net — The Neural Network of Human History</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#05070d;
+    --bg-2:#080c18;
+    --panel:#0b1224;
+    --panel-2:#0f1a34;
+    --border:rgba(77,216,232,0.25);
+    --cyan:#4dd8e8;
+    --violet:#a56bff;
+    --pink:#ff5470;
+    --text:#dbe7f3;
+    --muted:#7f93ad;
+    --font-display:'Orbitron',sans-serif;
+    --font-body:'Rajdhani','Noto Sans Bengali',sans-serif;
+    --font-mono:'Share Tech Mono',monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(ellipse at 20% -10%, rgba(165,107,255,0.12), transparent 45%),
+      radial-gradient(ellipse at 80% 0%, rgba(77,216,232,0.10), transparent 40%),
+      var(--bg);
+    color:var(--text);
+    font-family:var(--font-body);
+    min-height:100vh;
+    line-height:1.5;
+  }
+  ::selection{ background:var(--cyan); color:#000; }
+  a{ color:var(--cyan); }
+
+  .grid-overlay{
+    position:fixed; inset:0; pointer-events:none; z-index:0;
+    background-image:
+      linear-gradient(rgba(77,216,232,0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(77,216,232,0.045) 1px, transparent 1px);
+    background-size:42px 42px;
+    mask-image:radial-gradient(ellipse at 50% 0%, black 40%, transparent 85%);
+  }
+
+  header{
+    position:sticky; top:0; z-index:20;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 28px;
+    background:rgba(5,7,13,0.82);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--border);
+    gap:16px; flex-wrap:wrap;
+  }
+  .brand{ display:flex; align-items:center; gap:12px; }
+  .brand-mark{ width:34px; height:34px; position:relative; display:flex; align-items:center; justify-content:center; }
+  .brand-mark svg{ width:100%; height:100%; }
+  .brand h1{
+    font-family:var(--font-display); font-size:20px; letter-spacing:2px;
+    margin:0; font-weight:900; color:#fff;
+    text-shadow:0 0 12px rgba(77,216,232,0.5);
+  }
+  .brand h1 .fx{ color:var(--pink); text-shadow:0 0 14px rgba(255,84,112,0.7); }
+  .brand small{
+    display:block; font-family:var(--font-mono); font-size:10px; letter-spacing:1.5px;
+    color:var(--muted); margin-top:2px;
+  }
+
+  nav.tabs{ display:flex; gap:6px; }
+  .tab-btn{
+    font-family:var(--font-display); font-size:12px; letter-spacing:1.5px;
+    background:transparent; border:1px solid transparent; color:var(--muted);
+    padding:9px 16px; cursor:pointer; border-radius:2px; transition:.2s;
+  }
+  .tab-btn.active, .tab-btn:hover{
+    color:var(--cyan); border-color:var(--border); background:rgba(77,216,232,0.06);
+  }
+
+  .auth-area{ display:flex; align-items:center; gap:10px; }
+  .lang-toggle{ display:flex; border:1px solid var(--border); border-radius:20px; overflow:hidden; }
+  .lang-toggle button{
+    font-family:var(--font-mono); font-size:11px; letter-spacing:1px; padding:6px 12px;
+    background:transparent; border:none; color:var(--muted); cursor:pointer; transition:.2s;
+  }
+  .lang-toggle button.active{ background:var(--cyan); color:#000; font-weight:700; }
+
+  .btn{
+    font-family:var(--font-body); font-weight:600; letter-spacing:.5px;
+    font-size:14px; padding:9px 18px; border-radius:3px; cursor:pointer;
+    border:1px solid var(--border); background:rgba(15,26,52,0.6); color:var(--text);
+    transition:.2s;
+  }
+  .btn:hover{ border-color:var(--cyan); box-shadow:0 0 14px rgba(77,216,232,0.25); }
+  .btn-primary{
+    background:linear-gradient(135deg, rgba(77,216,232,0.18), rgba(165,107,255,0.18));
+    border-color:var(--cyan); color:#fff;
+  }
+  .btn-danger{ border-color:rgba(255,84,112,0.5); color:#ffb0be; }
+  .btn-danger:hover{ border-color:var(--pink); box-shadow:0 0 14px rgba(255,84,112,0.3); }
+  .btn-ghost{ background:transparent; }
+  .status-pill{
+    font-family:var(--font-mono); font-size:11px; color:var(--cyan);
+    border:1px solid var(--border); padding:5px 10px; border-radius:20px;
+    display:flex; align-items:center; gap:6px; white-space:nowrap;
+  }
+  .status-pill .dot{ width:6px; height:6px; border-radius:50%; background:var(--cyan); box-shadow:0 0 8px var(--cyan); }
+
+  main{ position:relative; z-index:1; max-width:980px; margin:0 auto; padding:40px 24px 120px; }
+
+  .page-title{ text-align:center; margin-bottom:48px; }
+  .page-title h2{
+    font-family:var(--font-display); font-size:clamp(24px,4vw,38px); font-weight:900;
+    margin:0; letter-spacing:2px; color:#fff;
+    text-shadow:0 0 20px rgba(165,107,255,0.35);
+  }
+  .page-title p{ color:var(--muted); font-family:var(--font-mono); font-size:13px; margin-top:8px; }
+
+  .timeline{ position:relative; padding-left:36px; }
+  .timeline::before{
+    content:''; position:absolute; left:11px; top:0; bottom:0; width:2px;
+    background:linear-gradient(180deg, var(--cyan), var(--violet) 50%, var(--pink));
+    box-shadow:0 0 10px rgba(77,216,232,0.5);
+  }
+  .event-node{ position:relative; margin-bottom:28px; }
+  .event-node::before{
+    content:''; position:absolute; left:-36px; top:14px; width:14px; height:14px;
+    background:var(--bg); border:2px solid var(--cyan);
+    clip-path:polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    box-shadow:0 0 10px rgba(77,216,232,0.7);
+  }
+  .event-card{
+    background:linear-gradient(160deg, var(--panel), var(--panel-2));
+    border:1px solid var(--border); border-radius:6px; padding:18px 22px;
+    cursor:pointer; transition:.25s;
+  }
+  .event-card:hover{ border-color:var(--cyan); box-shadow:0 0 20px rgba(77,216,232,0.12); }
+  .event-date{ font-family:var(--font-mono); font-size:12px; color:var(--violet); letter-spacing:1px; }
+  .event-title{ font-family:var(--font-display); font-size:17px; font-weight:700; margin:6px 0 0; color:#fff; }
+  .event-category{
+    display:inline-block; font-family:var(--font-mono); font-size:10px; letter-spacing:1px;
+    color:var(--cyan); border:1px solid var(--border); padding:2px 8px; border-radius:10px; margin-top:8px;
+  }
+  .event-body{ margin-top:14px; display:none; }
+  .event-body.open{ display:block; animation:fadeIn .25s ease; }
+  @keyframes fadeIn{ from{opacity:0; transform:translateY(-4px);} to{opacity:1; transform:none;} }
+  .event-desc{ color:var(--text); font-size:15px; margin:10px 0; }
+  .event-media img{ max-width:100%; border-radius:4px; border:1px solid var(--border); display:block; margin:12px 0; }
+  .event-media iframe{ width:100%; aspect-ratio:16/9; border:1px solid var(--border); border-radius:4px; margin:12px 0; }
+  .event-actions{ display:flex; gap:8px; margin-top:12px; }
+
+  .empty-state{
+    text-align:center; padding:60px 20px; color:var(--muted); font-family:var(--font-mono); font-size:13px;
+    border:1px dashed var(--border); border-radius:8px;
+  }
+
+  .blog-grid{ display:grid; gap:18px; }
+  .blog-card{
+    background:linear-gradient(160deg, var(--panel), var(--panel-2));
+    border:1px solid var(--border); border-radius:6px; padding:20px 22px;
+  }
+  .blog-title{ font-family:var(--font-display); font-size:16px; color:#fff; margin:0 0 6px; }
+  .blog-meta{ font-family:var(--font-mono); font-size:11px; color:var(--muted); }
+  .blog-content{ margin-top:10px; font-size:15px; white-space:pre-wrap; }
+  .blog-actions{ display:flex; gap:8px; margin-top:14px; }
+
+  .section-toolbar{ display:flex; justify-content:flex-end; margin-bottom:18px; }
+
+  .overlay{
+    position:fixed; inset:0; background:rgba(2,3,8,0.75); backdrop-filter:blur(3px);
+    display:none; align-items:center; justify-content:center; z-index:50; padding:20px;
+  }
+  .overlay.open{ display:flex; }
+  .modal{
+    width:100%; max-width:480px; background:var(--panel); border:1px solid var(--cyan);
+    border-radius:8px; padding:26px; box-shadow:0 0 40px rgba(77,216,232,0.15);
+    max-height:90vh; overflow-y:auto;
+  }
+  .modal h3{ font-family:var(--font-display); font-size:16px; letter-spacing:1px; color:#fff; margin:0 0 18px; }
+  .field{ margin-bottom:14px; }
+  .field label{
+    display:block; font-family:var(--font-mono); font-size:11px; color:var(--cyan);
+    letter-spacing:1px; margin-bottom:6px; text-transform:uppercase;
+  }
+  .field input, .field textarea, .field select{
+    width:100%; background:var(--bg-2); border:1px solid var(--border); color:var(--text);
+    padding:10px 12px; border-radius:4px; font-family:var(--font-body); font-size:14px;
+  }
+  .field textarea{ resize:vertical; min-height:80px; }
+  .field input:focus, .field textarea:focus, .field select:focus{ outline:none; border-color:var(--cyan); }
+  .modal-actions{ display:flex; gap:10px; justify-content:flex-end; margin-top:20px; }
+  .error-text{ color:var(--pink); font-family:var(--font-mono); font-size:12px; margin-top:8px; min-height:16px; }
+  .hint-text{ color:var(--muted); font-family:var(--font-mono); font-size:11px; margin-top:6px; }
+
+  footer{
+    text-align:center; padding:30px; color:var(--muted); font-family:var(--font-mono); font-size:11px;
+    border-top:1px solid var(--border); position:relative; z-index:1;
+  }
+
+  @media (max-width:600px){
+    header{ padding:12px 16px; }
+    nav.tabs{ order:3; width:100%; justify-content:center; }
+  }
+</style>
+</head>
+<body>
+<div class="grid-overlay"></div>
+
+<header>
+  <div class="brand">
+    <div class="brand-mark">
+      <svg viewBox="0 0 40 40" fill="none">
+        <polygon points="20,2 36,11 36,29 20,38 4,29 4,11" stroke="#4dd8e8" stroke-width="2"/>
+        <circle cx="20" cy="20" r="6" stroke="#a56bff" stroke-width="2"/>
+      </svg>
+    </div>
+    <div>
+      <h1><span class="fx">Fr3@k</span> Net</h1>
+      <small data-i18n="brandSub">THE NEURAL NETWORK OF HUMAN HISTORY</small>
+    </div>
+  </div>
+
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="timeline" data-i18n="tabTimeline">TIMELINE</button>
+    <button class="tab-btn" data-tab="blog" data-i18n="tabBlog">BLOG</button>
+  </nav>
+
+  <div class="auth-area">
+    <div class="lang-toggle">
+      <button id="langBn">বাং</button>
+      <button id="langEn">EN</button>
+    </div>
+    <span class="status-pill" id="statusPill"><span class="dot"></span><span data-i18n="guest">GUEST</span></span>
+    <button class="btn" id="loginBtn" data-i18n="loginBtn">লগ ইন</button>
+  </div>
+</header>
+
+<main>
+  <section id="timelineView">
+    <div class="page-title">
+      <h2 data-i18n="pageTitleTimeline">HISTORY TIMELINE</h2>
+      <p data-i18n="pageSubTimeline">// CHRONOLOGICAL DATA STREAM</p>
+    </div>
+    <div class="section-toolbar" id="eventToolbar" style="display:none;">
+      <button class="btn btn-primary" id="addEventBtn" data-i18n="addEvent">+ নতুন ইভেন্ট</button>
+    </div>
+    <div class="timeline" id="timelineList"></div>
+  </section>
+
+  <section id="blogView" style="display:none;">
+    <div class="page-title">
+      <h2 data-i18n="pageTitleBlog">ARCHIVE LOGS</h2>
+      <p data-i18n="pageSubBlog">// FIELD NOTES &amp; TRANSMISSIONS</p>
+    </div>
+    <div class="section-toolbar" id="blogToolbar" style="display:none;">
+      <button class="btn btn-primary" id="addBlogBtn" data-i18n="addBlog">+ নতুন পোস্ট</button>
+    </div>
+    <div class="blog-grid" id="blogList"></div>
+  </section>
+</main>
+
+<footer data-i18n="footerText">Fr3@k Net — DATA SYNCED FROM GOOGLE SHEETS</footer>
+
+<!-- LOGIN MODAL -->
+<div class="overlay" id="loginOverlay">
+  <div class="modal">
+    <h3 data-i18n="loginTitle">&gt; ACCESS TERMINAL</h3>
+    <div class="field"><label data-i18n="username">Username</label><input type="text" id="loginUser"></div>
+    <div class="field"><label data-i18n="password">Password</label><input type="password" id="loginPass"></div>
+    <div class="error-text" id="loginError"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" data-close="loginOverlay" data-i18n="cancel">বাতিল</button>
+      <button class="btn btn-primary" id="loginSubmit" data-i18n="enter">প্রবেশ করুন</button>
+    </div>
+  </div>
+</div>
+
+<!-- EVENT MODAL -->
+<div class="overlay" id="eventOverlay">
+  <div class="modal">
+    <h3 id="eventModalTitle" data-i18n="newEventTitle">&gt; NEW EVENT</h3>
+    <input type="hidden" id="eventId">
+    <div class="field"><label data-i18n="fieldTitle">Title</label><input type="text" id="eventTitle"></div>
+    <div class="field"><label data-i18n="fieldDate">Date</label><input type="text" id="eventDate" data-i18n-ph="fieldDatePh" placeholder="e.g. 1971-03-26 or 3rd Century BC"></div>
+    <div class="field"><label data-i18n="fieldCategory">Category</label><input type="text" id="eventCategory" data-i18n-ph="fieldCategoryPh" placeholder="e.g. War, Discovery, Politics"></div>
+    <div class="field"><label data-i18n="fieldDescription">Description</label><textarea id="eventDescription"></textarea></div>
+    <div class="field"><label data-i18n="fieldImage">Image URL</label><input type="text" id="eventImage" data-i18n-ph="fieldImagePh" placeholder="https://..."></div>
+    <div class="field"><label data-i18n="fieldVideo">Video Link (YouTube / Facebook)</label><input type="text" id="eventVideo" data-i18n-ph="fieldVideoPh" placeholder="https://youtube.com/... or https://facebook.com/..."></div>
+    <div class="hint-text" data-i18n="langAnyHint">যেকোনো ভাষায় (বাংলা/English) লিখুন — সাইটের ভাষা অনুযায়ী এটি স্বয়ংক্রিয়ভাবে অনুবাদ হয়ে দেখানো হবে।</div>
+    <div class="error-text" id="eventError"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" data-close="eventOverlay" data-i18n="cancel">বাতিল</button>
+      <button class="btn btn-primary" id="eventSubmit" data-i18n="save">সংরক্ষণ করুন</button>
+    </div>
+  </div>
+</div>
+
+<!-- BLOG MODAL -->
+<div class="overlay" id="blogOverlay">
+  <div class="modal">
+    <h3 id="blogModalTitle" data-i18n="newBlogTitle">&gt; NEW LOG ENTRY</h3>
+    <input type="hidden" id="blogId">
+    <div class="field"><label data-i18n="fieldTitle">Title</label><input type="text" id="blogTitle"></div>
+    <div class="field"><label data-i18n="fieldAuthor">Author</label><input type="text" id="blogAuthor"></div>
+    <div class="field"><label data-i18n="fieldContent">Content</label><textarea id="blogContent" style="min-height:140px;"></textarea></div>
+    <div class="hint-text" data-i18n="langAnyHint">যেকোনো ভাষায় (বাংলা/English) লিখুন — সাইটের ভাষা অনুযায়ী এটি স্বয়ংক্রিয়ভাবে অনুবাদ হয়ে দেখানো হবে।</div>
+    <div class="error-text" id="blogError"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" data-close="blogOverlay" data-i18n="cancel">বাতিল</button>
+      <button class="btn btn-primary" id="blogSubmit" data-i18n="save">সংরক্ষণ করুন</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ================================================================
+   ⚙️ কনফিগারেশন — এইখানে আপনার Apps Script Web App URL বসান
+   ================================================================ */
+const APPS_SCRIPT_URL = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
+
+/* ---------------- i18n ---------------- */
+const I18N = {
+  bn:{
+    brandSub:"মানব ইতিহাসের নিউরাল নেটওয়ার্ক",
+    tabTimeline:"টাইমলাইন", tabBlog:"ব্লগ",
+    guest:"গেস্ট", loginBtn:"লগ ইন", logoutBtn:"লগ আউট",
+    pageTitleTimeline:"হিস্ট্রি টাইমলাইন", pageSubTimeline:"// কালানুক্রমিক ডেটা স্ট্রিম",
+    pageTitleBlog:"আর্কাইভ লগ", pageSubBlog:"// ফিল্ড নোটস ও ট্রান্সমিশন",
+    addEvent:"+ নতুন ইভেন্ট", addBlog:"+ নতুন পোস্ট",
+    edit:"এডিট", delete:"ডিলিট", cancel:"বাতিল", save:"সংরক্ষণ করুন",
+    loginTitle:"> অ্যাক্সেস টার্মিনাল", username:"ইউজারনেম", password:"পাসওয়ার্ড", enter:"প্রবেশ করুন",
+    loginWrong:"ভুল ইউজারনেম বা পাসওয়ার্ড।", verifying:"যাচাই করা হচ্ছে...",
+    connError:"সার্ভারে সংযোগ করা যাচ্ছে না। APPS_SCRIPT_URL ঠিক আছে কি না দেখুন।",
+    newEventTitle:"> নতুন ইভেন্ট", editEventTitle:"> ইভেন্ট এডিট",
+    fieldTitle:"শিরোনাম", fieldDate:"তারিখ", fieldDatePh:"যেমনঃ ১৯৭১-০৩-২৬ বা খ্রিস্টপূর্ব ৩য় শতক",
+    fieldCategory:"ক্যাটাগরি", fieldCategoryPh:"যেমনঃ যুদ্ধ, আবিষ্কার, রাজনীতি",
+    fieldDescription:"বিবরণ", fieldImage:"ছবির লিংক (Image URL)", fieldImagePh:"https://...",
+    fieldVideo:"ভিডিও লিংক (YouTube / Facebook)", fieldVideoPh:"https://youtube.com/... বা https://facebook.com/...",
+    langAnyHint:"যেকোনো ভাষায় (বাংলা/English) লিখুন — সাইটের ভাষা অনুযায়ী এটি স্বয়ংক্রিয়ভাবে অনুবাদ হয়ে দেখানো হবে।",
+    titleRequired:"শিরোনাম আবশ্যক।", saving:"সংরক্ষণ হচ্ছে...", saveFail:"সংরক্ষণ ব্যর্থ হয়েছে।", serverError:"সার্ভার এরর।",
+    confirmDeleteEvent:"এই ইভেন্টটি ডিলিট করবেন?", confirmDeleteBlog:"এই পোস্টটি ডিলিট করবেন?", deleteFail:"ডিলিট ব্যর্থ হয়েছে।",
+    newBlogTitle:"> নতুন লগ এন্ট্রি", editBlogTitle:"> লগ এন্ট্রি এডিট", fieldAuthor:"লেখক", fieldContent:"বিষয়বস্তু",
+    loadingText:"লোড হচ্ছে...", emptyEvents:"এখনো কোনো ইভেন্ট নেই। Apps Script URL কনফিগার করা হয়েছে কি না দেখুন, অথবা নতুন ইভেন্ট যোগ করুন।",
+    emptyBlogs:"এখনো কোনো ব্লগ পোস্ট নেই।", videoLinkFallback:"ভিডিও লিংক দেখুন ↗",
+    footerText:"Fr3@k Net — গুগল শিট থেকে সিঙ্ক করা ডেটা", unknownAuthor:"অজানা"
+  },
+  en:{
+    brandSub:"THE NEURAL NETWORK OF HUMAN HISTORY",
+    tabTimeline:"TIMELINE", tabBlog:"BLOG",
+    guest:"GUEST", loginBtn:"Log In", logoutBtn:"Log Out",
+    pageTitleTimeline:"HISTORY TIMELINE", pageSubTimeline:"// CHRONOLOGICAL DATA STREAM",
+    pageTitleBlog:"ARCHIVE LOGS", pageSubBlog:"// FIELD NOTES & TRANSMISSIONS",
+    addEvent:"+ New Event", addBlog:"+ New Post",
+    edit:"Edit", delete:"Delete", cancel:"Cancel", save:"Save",
+    loginTitle:"> ACCESS TERMINAL", username:"Username", password:"Password", enter:"Enter",
+    loginWrong:"Incorrect username or password.", verifying:"Verifying...",
+    connError:"Can't reach the server. Check the APPS_SCRIPT_URL.",
+    newEventTitle:"> NEW EVENT", editEventTitle:"> EDIT EVENT",
+    fieldTitle:"Title", fieldDate:"Date", fieldDatePh:"e.g. 1971-03-26 or 3rd Century BC",
+    fieldCategory:"Category", fieldCategoryPh:"e.g. War, Discovery, Politics",
+    fieldDescription:"Description", fieldImage:"Image URL", fieldImagePh:"https://...",
+    fieldVideo:"Video Link (YouTube / Facebook)", fieldVideoPh:"https://youtube.com/... or https://facebook.com/...",
+    langAnyHint:"Write in any language (Bangla/English) — it will auto-translate based on the site language.",
+    titleRequired:"Title is required.", saving:"Saving...", saveFail:"Save failed.", serverError:"Server error.",
+    confirmDeleteEvent:"Delete this event?", confirmDeleteBlog:"Delete this post?", deleteFail:"Delete failed.",
+    newBlogTitle:"> NEW LOG ENTRY", editBlogTitle:"> EDIT LOG ENTRY", fieldAuthor:"Author", fieldContent:"Content",
+    loadingText:"Loading...", emptyEvents:"No events yet. Check the Apps Script URL configuration, or add a new event.",
+    emptyBlogs:"No blog posts yet.", videoLinkFallback:"View video link ↗",
+    footerText:"Fr3@k Net — DATA SYNCED FROM GOOGLE SHEETS", unknownAuthor:"Unknown"
+  }
+};
+let currentLang = 'bn';
+function t(key){ return (I18N[currentLang] && I18N[currentLang][key]) || key; }
+
+function applyStaticI18n(){
+  document.documentElement.lang = currentLang;
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    el.textContent = t(el.dataset.i18n);
+  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el=>{
+    el.setAttribute('placeholder', t(el.dataset.i18nPh));
+  });
+  document.getElementById('langBn').classList.toggle('active', currentLang==='bn');
+  document.getElementById('langEn').classList.toggle('active', currentLang==='en');
+}
+
+document.getElementById('langBn').addEventListener('click', ()=> switchLang('bn'));
+document.getElementById('langEn').addEventListener('click', ()=> switchLang('en'));
+function switchLang(lang){
+  if(currentLang===lang) return;
+  currentLang = lang;
+  applyStaticI18n();
+  updateAuthUI();
+  renderEvents();
+  renderBlogs();
+}
+
+/* ---------------- translation cache (auto-translate content) ---------------- */
+const translationCache = {};
+async function translateText(text, targetLang){
+  if(!text) return text;
+  const key = targetLang+'::'+text;
+  if(translationCache[key] !== undefined) return translationCache[key];
+  try{
+    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    const translated = data[0].map(chunk=>chunk[0]).join('');
+    translationCache[key] = translated;
+    return translated;
+  }catch(e){
+    translationCache[key] = text;
+    return text;
+  }
+}
+
+/* লগইন সেশন শুধু মেমোরিতে থাকে — পেজ রিফ্রেশ করলে আবার লগইন করতে হবে। */
+let session = { loggedIn:false, username:"", password:"" };
+let eventsCache = [];
+let blogsCache = [];
+
+function $(id){ return document.getElementById(id); }
+function openOverlay(id){ $(id).classList.add('open'); }
+function closeOverlay(id){ $(id).classList.remove('open'); }
+document.querySelectorAll('[data-close]').forEach(btn=>{
+  btn.addEventListener('click', ()=> closeOverlay(btn.dataset.close));
+});
+
+async function apiGet(action){
+  const res = await fetch(`${APPS_SCRIPT_URL}?action=${action}`);
+  return res.json();
+}
+async function apiPost(payload){
+  const res = await fetch(APPS_SCRIPT_URL, {
+    method:'POST',
+    headers:{ 'Content-Type':'text/plain;charset=utf-8' },
+    body: JSON.stringify(payload)
+  });
+  return res.json();
+}
+
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const tab = btn.dataset.tab;
+    $('timelineView').style.display = tab==='timeline' ? 'block':'none';
+    $('blogView').style.display = tab==='blog' ? 'block':'none';
+  });
+});
+
+$('loginBtn').addEventListener('click', ()=>{
+  if(session.loggedIn){
+    session = { loggedIn:false, username:"", password:"" };
+    updateAuthUI();
+    return;
+  }
+  $('loginError').textContent = '';
+  $('loginUser').value=''; $('loginPass').value='';
+  openOverlay('loginOverlay');
+});
+
+$('loginSubmit').addEventListener('click', async ()=>{
+  const u = $('loginUser').value.trim();
+  const p = $('loginPass').value;
+  $('loginError').textContent = t('verifying');
+  try{
+    const r = await apiPost({ action:'login', username:u, password:p });
+    if(r.ok){
+      session = { loggedIn:true, username:u, password:p };
+      closeOverlay('loginOverlay');
+      updateAuthUI();
+    } else {
+      $('loginError').textContent = t('loginWrong');
+    }
+  }catch(err){
+    $('loginError').textContent = t('connError');
+  }
+});
+
+function updateAuthUI(){
+  const pill = $('statusPill');
+  if(session.loggedIn){
+    pill.innerHTML = '<span class="dot" style="background:#a56bff;box-shadow:0 0 8px #a56bff;"></span>'+ (currentLang==='bn'?'অ্যাডমিন':'ADMIN') +': '+session.username;
+    $('loginBtn').textContent = t('logoutBtn');
+    $('eventToolbar').style.display = 'flex';
+    $('blogToolbar').style.display = 'flex';
+  } else {
+    pill.innerHTML = '<span class="dot"></span><span>'+t('guest')+'</span>';
+    $('loginBtn').textContent = t('loginBtn');
+    $('eventToolbar').style.display = 'none';
+    $('blogToolbar').style.display = 'none';
+  }
+}
+
+function getEmbedHtml(url){
+  if(!url) return '';
+  url = url.trim();
+  let ytId = null;
+  let m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{6,})/);
+  if(m) ytId = m[1];
+  if(ytId){
+    return `<iframe src="https://www.youtube.com/embed/${ytId}" allowfullscreen loading="lazy"></iframe>`;
+  }
+  if(/facebook\.com/.test(url)){
+    const encoded = encodeURIComponent(url);
+    return `<iframe src="https://www.facebook.com/plugins/video.php?href=${encoded}&show_text=0" allowfullscreen loading="lazy"></iframe>`;
+  }
+  return `<p><a href="${url}" target="_blank" rel="noopener">${t('videoLinkFallback')}</a></p>`;
+}
+
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+/* ---------------- Events ---------------- */
+async function loadEvents(){
+  $('timelineList').innerHTML = '<div class="empty-state">'+t('loadingText')+'</div>';
+  try{
+    const r = await apiGet('getEvents');
+    eventsCache = r.ok ? r.data : [];
+  }catch(e){ eventsCache = []; }
+  renderEvents();
+}
+
+async function renderEvents(){
+  const list = $('timelineList');
+  if(!eventsCache.length){
+    list.innerHTML = '<div class="empty-state">'+t('emptyEvents')+'</div>';
+    return;
+  }
+  list.innerHTML = '<div class="empty-state">'+t('loadingText')+'</div>';
+  const sorted = [...eventsCache].sort((a,b)=> (a.Date||'').localeCompare(b.Date||''));
+  const lang = currentLang;
+  const translated = await Promise.all(sorted.map(async ev=>{
+    const [title, date, desc, category] = await Promise.all([
+      translateText(ev.Title||'', lang),
+      translateText(ev.Date||'', lang),
+      translateText(ev.Description||'', lang),
+      translateText(ev.Category||'', lang)
+    ]);
+    return { ...ev, _title:title, _date:date, _desc:desc, _category:category };
+  }));
+
+  if(lang !== currentLang) return; // ভাষা মাঝপথে বদলে গেলে পুরনো রেজাল্ট বাতিল
+
+  list.innerHTML = translated.map(ev => `
+    <div class="event-node">
+      <div class="event-card" data-id="${ev.ID}">
+        <div class="event-date">${escapeHtml(ev._date)}</div>
+        <div class="event-title">${escapeHtml(ev._title)}</div>
+        ${ev._category ? `<span class="event-category">${escapeHtml(ev._category)}</span>` : ''}
+        <div class="event-body" id="body-${ev.ID}">
+          <div class="event-desc">${escapeHtml(ev._desc)}</div>
+          <div class="event-media">
+            ${ev.ImageURL ? `<img src="${ev.ImageURL}" alt="${escapeHtml(ev._title)}" loading="lazy">` : ''}
+            ${ev.VideoURL ? getEmbedHtml(ev.VideoURL) : ''}
+          </div>
+          ${session.loggedIn ? `
+          <div class="event-actions">
+            <button class="btn" onclick="editEventPrompt('${ev.ID}')">${t('edit')}</button>
+            <button class="btn btn-danger" onclick="deleteEvent('${ev.ID}')">${t('delete')}</button>
+          </div>` : ''}
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  list.querySelectorAll('.event-card').forEach(card=>{
+    card.addEventListener('click', (e)=>{
+      if(e.target.closest('button')) return;
+      const body = $('body-'+card.dataset.id);
+      body.classList.toggle('open');
+    });
+  });
+}
+
+$('addEventBtn').addEventListener('click', ()=>{
+  $('eventModalTitle').textContent = t('newEventTitle');
+  $('eventId').value=''; $('eventTitle').value=''; $('eventDate').value='';
+  $('eventCategory').value=''; $('eventDescription').value='';
+  $('eventImage').value=''; $('eventVideo').value=''; $('eventError').textContent='';
+  openOverlay('eventOverlay');
+});
+
+function editEventPrompt(id){
+  const ev = eventsCache.find(e=>e.ID===id);
+  if(!ev) return;
+  $('eventModalTitle').textContent = t('editEventTitle');
+  $('eventId').value = ev.ID;
+  $('eventTitle').value = ev.Title||'';
+  $('eventDate').value = ev.Date||'';
+  $('eventCategory').value = ev.Category||'';
+  $('eventDescription').value = ev.Description||'';
+  $('eventImage').value = ev.ImageURL||'';
+  $('eventVideo').value = ev.VideoURL||'';
+  $('eventError').textContent='';
+  openOverlay('eventOverlay');
+}
+
+$('eventSubmit').addEventListener('click', async ()=>{
+  const id = $('eventId').value;
+  const payload = {
+    action: id ? 'editEvent' : 'addEvent',
+    username: session.username, password: session.password,
+    id, title: $('eventTitle').value, date: $('eventDate').value,
+    category: $('eventCategory').value, description: $('eventDescription').value,
+    imageUrl: $('eventImage').value, videoUrl: $('eventVideo').value
+  };
+  if(!payload.title){ $('eventError').textContent = t('titleRequired'); return; }
+  $('eventError').textContent = t('saving');
+  try{
+    const r = await apiPost(payload);
+    if(r.ok){ closeOverlay('eventOverlay'); loadEvents(); }
+    else $('eventError').textContent = r.error || t('saveFail');
+  }catch(e){ $('eventError').textContent = t('serverError'); }
+});
+
+async function deleteEvent(id){
+  if(!confirm(t('confirmDeleteEvent'))) return;
+  try{
+    const r = await apiPost({ action:'deleteEvent', username:session.username, password:session.password, id });
+    if(r.ok) loadEvents();
+    else alert(r.error || t('deleteFail'));
+  }catch(e){ alert(t('serverError')); }
+}
+
+/* ---------------- Blogs ---------------- */
+async function loadBlogs(){
+  $('blogList').innerHTML = '<div class="empty-state">'+t('loadingText')+'</div>';
+  try{
+    const r = await apiGet('getBlogs');
+    blogsCache = r.ok ? r.data : [];
+  }catch(e){ blogsCache = []; }
+  renderBlogs();
+}
+
+async function renderBlogs(){
+  const list = $('blogList');
+  if(!blogsCache.length){
+    list.innerHTML = '<div class="empty-state">'+t('emptyBlogs')+'</div>';
+    return;
+  }
+  list.innerHTML = '<div class="empty-state">'+t('loadingText')+'</div>';
+  const sorted = [...blogsCache].sort((a,b)=> (b.CreatedAt||'').localeCompare(a.CreatedAt||''));
+  const lang = currentLang;
+  const translated = await Promise.all(sorted.map(async b=>{
+    const [title, content] = await Promise.all([
+      translateText(b.Title||'', lang),
+      translateText(b.Content||'', lang)
+    ]);
+    return { ...b, _title:title, _content:content };
+  }));
+
+  if(lang !== currentLang) return;
+
+  list.innerHTML = translated.map(b => `
+    <div class="blog-card">
+      <h3 class="blog-title">${escapeHtml(b._title)}</h3>
+      <div class="blog-meta">${currentLang==='bn'?'লেখকঃ':'by'} ${escapeHtml(b.Author||t('unknownAuthor'))} // ${escapeHtml((b.CreatedAt||'').split('T')[0]||'')}</div>
+      <div class="blog-content">${escapeHtml(b._content)}</div>
+      ${session.loggedIn ? `
+      <div class="blog-actions">
+        <button class="btn" onclick="editBlogPrompt('${b.ID}')">${t('edit')}</button>
+        <button class="btn btn-danger" onclick="deleteBlog('${b.ID}')">${t('delete')}</button>
+      </div>` : ''}
+    </div>
+  `).join('');
+}
+
+$('addBlogBtn').addEventListener('click', ()=>{
+  $('blogModalTitle').textContent = t('newBlogTitle');
+  $('blogId').value=''; $('blogTitle').value=''; $('blogAuthor').value=''; $('blogContent').value='';
+  $('blogError').textContent='';
+  openOverlay('blogOverlay');
+});
+
+function editBlogPrompt(id){
+  const b = blogsCache.find(x=>x.ID===id);
+  if(!b) return;
+  $('blogModalTitle').textContent = t('editBlogTitle');
+  $('blogId').value = b.ID;
+  $('blogTitle').value = b.Title||'';
+  $('blogAuthor').value = b.Author||'';
+  $('blogContent').value = b.Content||'';
+  $('blogError').textContent='';
+  openOverlay('blogOverlay');
+}
+
+$('blogSubmit').addEventListener('click', async ()=>{
+  const id = $('blogId').value;
+  const payload = {
+    action: id ? 'editBlog' : 'addBlog',
+    username: session.username, password: session.password,
+    id, title: $('blogTitle').value, author: $('blogAuthor').value, content: $('blogContent').value
+  };
+  if(!payload.title){ $('blogError').textContent = t('titleRequired'); return; }
+  $('blogError').textContent = t('saving');
+  try{
+    const r = await apiPost(payload);
+    if(r.ok){ closeOverlay('blogOverlay'); loadBlogs(); }
+    else $('blogError').textContent = r.error || t('saveFail');
+  }catch(e){ $('blogError').textContent = t('serverError'); }
+});
+
+async function deleteBlog(id){
+  if(!confirm(t('confirmDeleteBlog'))) return;
+  try{
+    const r = await apiPost({ action:'deleteBlog', username:session.username, password:session.password, id });
+    if(r.ok) loadBlogs();
+    else alert(r.error || t('deleteFail'));
+  }catch(e){ alert(t('serverError')); }
+}
+
+/* ---------------- Init ---------------- */
+applyStaticI18n();
+updateAuthUI();
+loadEvents();
+loadBlogs();
+</script>
+</body>
+</html>
